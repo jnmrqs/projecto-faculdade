@@ -2,6 +2,7 @@
 
 int main()
 {
-    printf("Ola mundo!\n"); // it's a good practice to add a newline as well
+    printf("Ola mundo!\n");
+    printf("Ola mundo escuro!\n");
     return 0;
 }
