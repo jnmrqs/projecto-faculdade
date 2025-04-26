@@ -1,10 +1,10 @@
-name: C/C++ CI
+name: C CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -13,11 +13,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+
+    - name: Compile C Program
+      run: gcc src/main.c -o hello_world
+
+    - name: Execute the program
+      run: ./hello_world
+
+    - name: Check output
+      run: |
+        output=$(./hello_world)
+        if [ "$output" != "Ola mundo!" ]; then
+          echo "Test failed: Output was '$output' instead of 'Ola mundo!'"
+          exit 1
+        fi
