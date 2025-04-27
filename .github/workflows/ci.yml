@@ -19,19 +19,16 @@ jobs:
             - name: Instalar dependências (se necessário)
               run: sudo apt-get update
 
-            - name: Compilar biblioteca e executáveis
+            - name: Compilar e rodar testes
+              id: run_tests
               run: |
                   gcc -I src -c src/math/math.c -o math.o
                   gcc -I src src/main.c math.o -o calculadora
                   gcc -I src tests/test_math.c math.o -o test_math
-
-            - name: Executar testes
-              id: run_tests
-              run: |
                   ./test_math
 
             - name: Create GitHub Release
-              if: steps.run_tests.outcome == 'success'
+              if: ${{ steps.run_tests.outcome == 'success' }}
               uses: softprops/action-gh-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
