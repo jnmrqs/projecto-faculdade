@@ -47,15 +47,15 @@ jobs:
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               run: |
-                  if [ "${{ steps.run_tests.outcome }}" == "success" ]; then
+                  if [[ "${{ steps.run_tests.outcome }}" == "success" ]]; then
                     STATUS="[OK] Testes passaram com sucesso!"
-                    COLOR="00ff88"
+                    COLOR=65208
                   else
                     STATUS="[X] Testes falharam!"
-                    COLOR="ff0049"
+                    COLOR=16711689
                   fi
 
                   curl -H "Content-Type: application/json" \
-                    -X POST \
-                    -d "{\"embeds\":[{\"title\":\"Status do CI/CD\",\"description\":\"${STATUS}\",\"color\":${COLOR}}]}" \
-                    $DISCORD_WEBHOOK
+                      -X POST \
+                      -d "{\"embeds\":[{\"title\":\"Status do CI/CD\",\"description\":\"${STATUS//\"/\\\"}\",\"color\":${COLOR}}]}" \
+                      "$DISCORD_WEBHOOK"
