@@ -21,7 +21,7 @@ jobs:
 
             - name: Compilar biblioteca e executáveis
               run: |
-                  gcc -I src -c src/math.c -o math.o
+                  gcc -I src -c src/math/math.c -o math.o
                   gcc -I src src/main.c math.o -o calculadora
                   gcc -I src tests/test_math.c math.o -o test_math
 
