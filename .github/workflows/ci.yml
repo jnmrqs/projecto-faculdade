@@ -1,0 +1,61 @@
+name: C CI com Testes Unitários
+
+on:
+    push:
+        branches:
+            - "**"
+
+permissions:
+    contents: write
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout do código
+              uses: actions/checkout@v4
+
+            - name: Instalar dependências (se necessário)
+              run: sudo apt-get update
+
+            - name: Compilar biblioteca e executáveis
+              run: |
+                  gcc -I src -c src/math.c -o math.o
+                  gcc -I src src/main.c math.o -o calculadora
+                  gcc -I src tests/test_math.c math.o -o test_math
+
+            - name: Executar testes
+              id: run_tests
+              run: |
+                  ./test_math
+
+            - name: Create GitHub Release
+              if: steps.run_tests.outcome == 'success'
+              uses: softprops/action-gh-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  files: calculadora
+                  tag_name: v${{ github.run_number }}
+                  name: Release v${{ github.run_number }}
+                  draft: false
+                  prerelease: false
+
+            - name: Enviar alerta para o Discord
+              if: always()
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              run: |
+                  if [ "${{ steps.run_tests.outcome }}" == "success" ]; then
+                    STATUS="[OK] Testes passaram com sucesso!"
+                    COLOR="00ff88"
+                  else
+                    STATUS="[X] Testes falharam!"
+                    COLOR="ff0049"
+                  fi
+
+                  curl -H "Content-Type: application/json" \
+                    -X POST \
+                    -d "{\"embeds\":[{\"title\":\"Status do CI/CD\",\"description\":\"${STATUS}\",\"color\":${COLOR}}]}" \
+                    $DISCORD_WEBHOOK
