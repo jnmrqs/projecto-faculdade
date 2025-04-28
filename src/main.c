@@ -11,7 +11,7 @@ int main( void )
 
     if ( menu_index > 4 || menu_index < 0 )
     {
-        printf( "Opcao invalida!\n" );
+        printf( "Opcao invalida!!\n" );
         return 1;
     }
 
